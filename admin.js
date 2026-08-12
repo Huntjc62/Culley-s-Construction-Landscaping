@@ -1,0 +1,11 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const loginPanel=document.getElementById("loginPanel"),dashboard=document.getElementById("dashboard"),list=document.getElementById("enquiries"),count=document.getElementById("enquiryCount"),status=document.getElementById("loginStatus");
+document.getElementById("loginForm")?.addEventListener("submit",async e=>{e.preventDefault();status.textContent="Signing in…";try{await signInWithEmailAndPassword(auth,adminEmail.value,adminPassword.value)}catch(err){status.textContent="Sign-in failed. Check the account details."}});
+document.getElementById("logoutBtn")?.addEventListener("click",()=>signOut(auth));
+onAuthStateChanged(auth,user=>{if(user){loginPanel.classList.add("hidden");dashboard.classList.remove("hidden");listen()}else{loginPanel.classList.remove("hidden");dashboard.classList.add("hidden")}});
+function listen(){const q=query(collection(db,"enquiries"),orderBy("createdAt","desc"));onSnapshot(q,snap=>{count.textContent=snap.size;list.innerHTML="";snap.forEach(d=>{const x=d.data(),date=x.createdAt?.toDate?x.createdAt.toDate().toLocaleString("en-GB"):"Just now";const el=document.createElement("article");el.className="enquiry";el.innerHTML=`<div class="enquiry-head"><div><h3>${escapeHtml(x.name||"Unnamed")}</h3><small>${escapeHtml(x.email||"")}</small></div><button class="delete-btn" data-id="${d.id}">Delete</button></div><div class="enquiry-meta"><span>${escapeHtml(x.service||"")}</span><span>${escapeHtml(x.phone||"No phone")}</span><span>${date}</span></div><div class="enquiry-message">${escapeHtml(x.message||"")}</div>`;el.querySelector(".delete-btn").onclick=async()=>{if(confirm("Delete this enquiry?"))await deleteDoc(doc(db,"enquiries",d.id))};list.appendChild(el)})})}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
