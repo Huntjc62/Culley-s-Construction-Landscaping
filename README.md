@@ -1,55 +1,68 @@
-# Culley's Construction & Landscaping — professional website
+# Culley's Construction & Landscaping — Firebase-ready website
 
-This version is designed as a polished multi-page marketing website with responsive layouts, photography, animations and a Firebase-powered enquiry/admin system.
+This package is connected to the Firebase project:
 
-## Before launch
-Replace:
-- `01325 000 000`
-- `hello@culleysconstruction.co.uk`
-- team names/roles
-- team photography
-- any copy you want to personalise
+`culley-s-construction`
 
-## Firebase
-1. Create a Firebase project.
-2. Add a Web App.
-3. Copy its config into `assets/firebase-config.js`.
-4. Enable Authentication → Email/Password.
-5. Create the Culley's admin account.
-6. Enable Firestore.
-7. Deploy to Firebase Hosting, Netlify, Vercel or another HTTPS host. Do not expect ES modules/Firebase to work reliably when double-clicking HTML files from Windows File Explorer.
+The Firebase Web App configuration supplied by the owner has already been added to:
 
-### Firestore rules
-Use:
+`assets/firebase-config.js`
 
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /enquiries/{id} {
-      allow create: if request.resource.data.name is string
-        && request.resource.data.email is string
-        && request.resource.data.message is string;
-      allow read, delete: if request.auth != null;
-      allow update: if false;
-    }
-  }
-}
+## Firebase setup — do these steps before testing
 
-For a production system, add an `admins` collection keyed by UID and restrict read/delete to approved admin UIDs.
+### 1. Authentication
+Firebase Console → Authentication → Sign-in method → Email/Password → Enable.
 
-## Pages
-Home / Construction / Landscaping / About / Contact / Admin
+Then go to Authentication → Users → Add user and create the Culley's admin login.
 
-## Important
-The image URLs use Unsplash photography so the site has real visual content immediately. For a final commercial launch, replace these with Culley's own project photography for a much stronger and more authentic result.
+### 2. Firestore
+Firebase Console → Firestore Database → Create database.
 
+Choose a suitable European/UK location and use production mode.
 
-## Bundled construction hero
-The construction hero image is now included locally at:
-`assets/construction-hero.png`
+### 3. Firestore rules
+Open Firestore Database → Rules and paste the contents of:
 
-This means the construction hero does not rely on an external image URL and will travel with the website package when deployed.
+`firestore.rules`
 
+Then click Publish.
 
-## Construction hero fix
-The Construction page no longer uses the previous bundled hero image because that image contained duplicated text. The page now uses a clean residential image as the CSS background and renders the heading only once in HTML.
+### 4. Test
+Deploy the website to HTTPS hosting. Do not test by double-clicking the HTML files.
+
+Open `/contact.html`, submit a test enquiry, then check:
+
+Firebase Console → Firestore Database → Data → enquiries
+
+Then open `/admin.html` and sign in with the Firebase admin user.
+
+## Important security note
+
+The Firebase web configuration is intentionally present in the website because Firebase web apps require it. The protection comes from Firebase Authentication and Firestore Security Rules.
+
+For production, the next security upgrade should be an `admins` collection so only specific approved Firebase user UIDs can read/delete enquiries, rather than every authenticated Firebase user.
+
+## Firebase Hosting
+
+Firebase CLI can be used to deploy this folder:
+
+1. Install Firebase CLI.
+2. Run `firebase login`.
+3. Run `firebase use culley-s-construction`.
+4. Run `firebase deploy`.
+
+If the project is not associated with the CLI yet, run `firebase init hosting` from this folder and select the existing `culley-s-construction` project.
+
+## Included
+
+- Home
+- Construction
+- Landscaping
+- About Us
+- Meet the Team
+- Contact/enquiry form
+- Firebase Firestore enquiry storage
+- Firebase email/password admin login
+- Admin enquiry dashboard
+- Local construction hero image
+- Responsive design
