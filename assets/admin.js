@@ -144,12 +144,12 @@ function loadEnquiries() {
           <div class="enqtop">
             <div>
               <h3>${escapeHtml(enquiry.name)}</h3>
-              <small>${escapeHtml(enquiry.email)}</small>
+              <small><a class="enquiry-email" href="mailto:${encodeURIComponent(enquiry.email || "")}">${escapeHtml(enquiry.email)}</a></small>
             </div>
             <button type="button" class="delete-enquiry">Delete</button>
           </div>
           <div class="enqmeta">
-            ${escapeHtml(enquiry.service)} · ${escapeHtml(enquiry.phone)} · ${date}
+            ${escapeHtml(enquiry.service)} · <a class="enquiry-phone" href="tel:${encodeURIComponent(enquiry.phone || "")}">${escapeHtml(enquiry.phone)}</a> · ${date}
           </div>
           <p>${escapeHtml(enquiry.message)}</p>
         `;
@@ -212,7 +212,7 @@ function loadEnquiries() {
                 <button type="button" class="delete-enquiry">Delete</button>
               </div>
               <div class="enqmeta">
-                ${escapeHtml(enquiry.service)} · ${escapeHtml(enquiry.phone)} · ${date}
+                ${escapeHtml(enquiry.service)} · <a class="enquiry-phone" href="tel:${encodeURIComponent(enquiry.phone || "")}">${escapeHtml(enquiry.phone)}</a> · ${date}
               </div>
               <p>${escapeHtml(enquiry.message)}</p>
             `;

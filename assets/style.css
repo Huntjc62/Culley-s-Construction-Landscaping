@@ -47,3 +47,18 @@
 .adminmain .hidden {
   display: none !important;
 }
+
+/* Click-to-contact links in the admin enquiry dashboard */
+.adminmain .enquiry-email,
+.adminmain .enquiry-phone {
+  color: #c9783e;
+  text-decoration: none;
+  font-weight: 700;
+}
+.adminmain .enquiry-email:hover,
+.adminmain .enquiry-phone:hover {
+  text-decoration: underline;
+}
+.adminmain .enquiry-phone {
+  white-space: nowrap;
+}

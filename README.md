@@ -137,3 +137,9 @@ The admin dashboard previously inherited the site's scroll-animation `opacity: 0
 This package explicitly forces the logged-in admin dashboard to `opacity: 1`, `transform: none` and `visibility: visible`.
 
 The admin Firestore listener also now has a fallback unordered query if the ordered `createdAt` query fails.
+
+
+## Admin contact actions
+Email addresses in the enquiry dashboard are now clickable `mailto:` links, so clicking an email opens the company's default email application with the customer's address filled in.
+
+Phone numbers are clickable `tel:` links, so clicking a number opens the device's calling application on supported devices.
