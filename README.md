@@ -49,3 +49,7 @@ The construction hero image is now included locally at:
 `assets/construction-hero.png`
 
 This means the construction hero does not rely on an external image URL and will travel with the website package when deployed.
+
+
+## Construction hero fix
+The Construction page no longer uses the previous bundled hero image because that image contained duplicated text. The page now uses a clean residential image as the CSS background and renders the heading only once in HTML.
