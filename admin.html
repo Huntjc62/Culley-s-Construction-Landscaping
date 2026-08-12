@@ -1,5 +1,57 @@
-<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Culley's Admin</title><link rel="stylesheet" href="assets/style.css"></head><body class="admin">
-<header class="adminhead"><a class="logo" href="index.html"><span class="logo-icon">C</span><span><strong>CULLEY'S</strong><small>ADMIN DASHBOARD</small></span></a><button id="logout" class="btn white">Sign out</button></header>
-<main class="adminmain"><section id="login"><div class="eyebrow">STAFF LOGIN</div><h1>Enquiry<br><i>dashboard.</i></h1><form id="loginform"><input id="email" type="email" placeholder="Email address" required><input id="password" type="password" placeholder="Password" required><button class="btn dark full">Sign in →</button><p id="loginmsg"></p></form></section>
-<section id="dash" class="hidden"><div class="dashhead"><div><div class="eyebrow">CULLEY'S / LIVE INBOX</div><h1>Website enquiries</h1></div><div class="count"><b id="count">0</b><span>total</span></div></div><div id="list"></div></section></main>
-<script type="module" src="assets/admin.js"></script></body></html>
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Culley's Admin | Enquiries</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="admin">
+<header class="adminhead">
+  <a class="logo" href="index.html">
+    <span class="logo-icon">C</span>
+    <span><strong>CULLEY'S</strong><small>ADMIN DASHBOARD</small></span>
+  </a>
+  <button id="logout" class="btn white hidden" type="button">Sign out</button>
+</header>
+
+<main class="adminmain">
+  <section id="login">
+    <div class="eyebrow">CULLEY'S / STAFF ONLY</div>
+    <h1>Admin<br><i>login.</i></h1>
+    <p class="adminintro">Sign in to view and manage website enquiries.</p>
+
+    <form id="loginform" autocomplete="on">
+      <label class="adminlabel">ADMIN EMAIL
+        <input id="email" type="email" autocomplete="username" readonly>
+      </label>
+
+      <label class="adminlabel">PASSWORD
+        <input id="password" type="password" placeholder="Enter your admin password" autocomplete="current-password" required>
+      </label>
+
+      <button id="loginButton" class="btn dark full" type="submit">Sign in →</button>
+      <p id="loginmsg" class="loginmsg" role="alert"></p>
+    </form>
+
+    <div id="firebaseWarning" class="firebase-warning hidden">
+      <strong>Firebase setup required</strong>
+      <span>If this page is blank or cannot sign in, make sure this GitHub Pages domain has been added to Firebase Authentication → Settings → Authorised domains.</span>
+    </div>
+  </section>
+
+  <section id="dash" class="hidden">
+    <div class="dashhead">
+      <div>
+        <div class="eyebrow">CULLEY'S / LIVE INBOX</div>
+        <h1>Website enquiries</h1>
+      </div>
+      <div class="count"><b id="count">0</b><span>total</span></div>
+    </div>
+    <div id="list"></div>
+  </section>
+</main>
+
+<script type="module" src="assets/admin.js"></script>
+</body>
+</html>

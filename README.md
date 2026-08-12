@@ -66,3 +66,66 @@ If the project is not associated with the CLI yet, run `firebase init hosting` f
 - Admin enquiry dashboard
 - Local construction hero image
 - Responsive design
+
+
+## Admin login — important
+
+There is deliberately **no Create Account / Register page**.
+
+The admin page only has:
+- the pre-configured Culley's admin email
+- an admin password field
+- Sign in
+
+The admin account must be created manually in Firebase:
+
+Firebase Console → Authentication → Users → Add user
+
+Use the email:
+
+`admin@culleysconstruction.co.uk`
+
+Then set the password there. The password is never stored in this website.
+
+### GitHub Pages blank-page fix
+
+If `/admin.html` is blank on GitHub Pages, check these settings:
+
+1. Firebase Console → Authentication → Sign-in method → Email/Password must be enabled.
+2. Firebase Console → Authentication → Settings → Authorised domains.
+3. Add your exact GitHub Pages host, for example:
+   `yourusername.github.io`
+4. If the site is hosted at:
+   `https://yourusername.github.io/your-repository/`
+   the authorised domain is still:
+   `yourusername.github.io`
+5. Make sure you deploy the contents of this ZIP to the GitHub repository, including the `.nojekyll` file.
+6. Hard-refresh the GitHub Pages site after deployment.
+
+The admin page has also been changed so Firebase initialisation errors are displayed on-screen rather than leaving an apparently blank page.
+
+### GitHub Pages URL
+
+The admin page is:
+
+`https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/admin.html`
+
+Do not add `/admin` — the file is named `admin.html`.
+
+### Admin login
+
+The email is configured in:
+
+`assets/firebase-config.js`
+
+Currently:
+
+`admin@culleysconstruction.co.uk`
+
+Only the password is entered on the website. No password is hard-coded into the code.
+
+### If you want a different admin email
+
+1. Create the desired user in Firebase Authentication.
+2. Change `adminEmail` in `assets/firebase-config.js`.
+3. Redeploy the site.

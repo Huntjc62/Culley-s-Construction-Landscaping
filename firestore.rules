@@ -4,19 +4,17 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /enquiries/{enquiryId} {
-      // Public website visitors may submit an enquiry.
-      allow create: if
-        request.resource.data.name is string &&
-        request.resource.data.email is string &&
-        request.resource.data.phone is string &&
-        request.resource.data.service is string &&
-        request.resource.data.message is string &&
-        request.resource.data.status == "New";
 
-      // Signed-in Firebase users may view/delete enquiries.
+      allow create: if
+        request.resource.data['name'] is string &&
+        request.resource.data['email'] is string &&
+        request.resource.data['phone'] is string &&
+        request.resource.data['service'] is string &&
+        request.resource.data['message'] is string &&
+        request.resource.data['status'] == 'New';
+
       allow read, delete: if request.auth != null;
 
-      // Enquiries cannot be edited from the website.
       allow update: if false;
     }
   }

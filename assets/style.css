@@ -18,3 +18,15 @@
   .innerhero.construction-hero > div{max-width:100%}
   .innerhero.construction-hero h1{font-size:clamp(44px,12vw,70px);letter-spacing:-2px}
 }
+
+.adminmain{min-height:calc(100vh - 80px)}
+.adminmain #login{opacity:1;transform:none;max-width:620px}
+.adminintro{color:#666;max-width:520px;margin:20px 0 30px}
+.adminlabel{display:block;font-size:9px;font-weight:800;letter-spacing:1.5px;margin-bottom:16px}
+.loginmsg{min-height:22px;font-size:12px;font-weight:700;margin-top:14px}
+.firebase-warning{margin-top:25px;padding:18px;background:#f1e1d3;border-left:3px solid #c9783e;font-size:12px;color:#5f4939}
+.firebase-warning strong,.firebase-warning span{display:block}
+.firebase-warning span{margin-top:5px}
+.empty-state{background:#fff;border:1px solid #ddd9d0;padding:35px}
+.empty-state h3{margin:0 0 5px}
+.empty-state p{margin:0;color:#666}

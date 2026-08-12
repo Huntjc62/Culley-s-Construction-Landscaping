@@ -6,3 +6,7 @@ export const firebaseConfig = {
   messagingSenderId: "395963057011",
   appId: "1:395963057011:web:1e0789199d084ca2dffb06"
 };
+
+// This is the Firebase Authentication email for the Culley's admin account.
+// Change this only if you create the admin user with a different email.
+export const adminEmail = "admin@culleysconstruction.co.uk";

@@ -1,10 +1,10 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -13,12 +13,8 @@ import {
   onSnapshot,
   doc,
   deleteDoc
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import { firebaseConfig } from "./firebase-config.js";
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig, adminEmail } from "./firebase-config.js";
 
 const login = document.querySelector("#login");
 const dashboard = document.querySelector("#dash");
@@ -26,41 +22,96 @@ const form = document.querySelector("#loginform");
 const loginMessage = document.querySelector("#loginmsg");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
+const loginButton = document.querySelector("#loginButton");
+const logoutButton = document.querySelector("#logout");
 const count = document.querySelector("#count");
 const list = document.querySelector("#list");
+const firebaseWarning = document.querySelector("#firebaseWarning");
 
-form?.addEventListener("submit", async (event) => {
+emailInput.value = adminEmail;
+
+let auth;
+let db;
+let unsubscribeEnquiries = null;
+
+function showError(message) {
+  loginMessage.textContent = message;
+  loginMessage.className = "loginmsg error";
+}
+
+try {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      login.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+      logoutButton.classList.remove("hidden");
+      loadEnquiries();
+    } else {
+      login.classList.remove("hidden");
+      dashboard.classList.add("hidden");
+      logoutButton.classList.add("hidden");
+      if (unsubscribeEnquiries) {
+        unsubscribeEnquiries();
+        unsubscribeEnquiries = null;
+      }
+      list.innerHTML = "";
+      count.textContent = "0";
+    }
+  });
+} catch (error) {
+  console.error("Firebase initialisation failed:", error);
+  firebaseWarning.classList.remove("hidden");
+  showError("The admin system could not connect to Firebase. Check the Firebase setup.");
+}
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  loginMessage.textContent = "Signing in…";
+
+  if (!auth) {
+    showError("Firebase is not connected yet. Check the Firebase setup.");
+    return;
+  }
+
+  loginButton.disabled = true;
+  loginButton.textContent = "Signing in…";
+  loginMessage.textContent = "";
 
   try {
     await signInWithEmailAndPassword(
       auth,
-      emailInput.value.trim(),
+      adminEmail,
       passwordInput.value
     );
     passwordInput.value = "";
   } catch (error) {
-    console.error("Culley's admin sign-in failed:", error);
-    loginMessage.textContent = "Unable to sign in. Please check your email and password.";
+    console.error("Admin sign-in failed:", error);
+
+    const code = error?.code || "";
+
+    if (code.includes("invalid-credential") || code.includes("wrong-password")) {
+      showError("Incorrect admin password.");
+    } else if (code.includes("user-not-found")) {
+      showError("The Culley's admin account has not been created in Firebase Authentication yet.");
+    } else if (code.includes("operation-not-allowed")) {
+      showError("Email/password sign-in is not enabled in Firebase Authentication.");
+    } else if (code.includes("unauthorized-domain")) {
+      showError("This website address is not authorised in Firebase Authentication.");
+      firebaseWarning.classList.remove("hidden");
+    } else {
+      showError("Unable to sign in. Please check the Firebase setup.");
+    }
+  } finally {
+    loginButton.disabled = false;
+    loginButton.textContent = "Sign in →";
   }
 });
 
-document.querySelector("#logout")?.addEventListener("click", async () => {
-  await signOut(auth);
-});
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    login.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-    loadEnquiries();
-  } else {
-    login.classList.remove("hidden");
-    dashboard.classList.add("hidden");
-    list.innerHTML = "";
-    count.textContent = "0";
-  }
+logoutButton.addEventListener("click", async () => {
+  if (auth) await signOut(auth);
 });
 
 function loadEnquiries() {
@@ -69,14 +120,14 @@ function loadEnquiries() {
     orderBy("createdAt", "desc")
   );
 
-  onSnapshot(
+  unsubscribeEnquiries = onSnapshot(
     enquiriesQuery,
     (snapshot) => {
       count.textContent = snapshot.size;
       list.innerHTML = "";
 
       if (snapshot.empty) {
-        list.innerHTML = "<p>No enquiries yet.</p>";
+        list.innerHTML = '<div class="empty-state"><h3>No enquiries yet.</h3><p>New website enquiries will appear here automatically.</p></div>';
         return;
       }
 
@@ -95,17 +146,15 @@ function loadEnquiries() {
               <h3>${escapeHtml(enquiry.name)}</h3>
               <small>${escapeHtml(enquiry.email)}</small>
             </div>
-            <button type="button">Delete</button>
+            <button type="button" class="delete-enquiry">Delete</button>
           </div>
           <div class="enqmeta">
-            ${escapeHtml(enquiry.service)} ·
-            ${escapeHtml(enquiry.phone)} ·
-            ${date}
+            ${escapeHtml(enquiry.service)} · ${escapeHtml(enquiry.phone)} · ${date}
           </div>
           <p>${escapeHtml(enquiry.message)}</p>
         `;
 
-        article.querySelector("button").addEventListener("click", async () => {
+        article.querySelector(".delete-enquiry").addEventListener("click", async () => {
           if (!confirm("Delete this enquiry?")) return;
 
           try {
@@ -121,7 +170,7 @@ function loadEnquiries() {
     },
     (error) => {
       console.error("Could not load enquiries:", error);
-      list.innerHTML = "<p>Unable to load enquiries. Check your Firestore security rules.</p>";
+      list.innerHTML = '<div class="empty-state"><h3>Unable to load enquiries.</h3><p>Check that Firestore is enabled and the published security rules allow your admin account to read enquiries.</p></div>';
     }
   );
 }
