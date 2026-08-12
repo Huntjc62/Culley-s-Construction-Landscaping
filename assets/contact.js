@@ -1,0 +1,5 @@
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
+import {getFirestore,collection,addDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js';
+import {firebaseConfig} from './firebase-config.js';
+const app=initializeApp(firebaseConfig),db=getFirestore(app),form=document.querySelector('#enquiryForm'),msg=document.querySelector('#formMessage');
+form?.addEventListener('submit',async e=>{e.preventDefault();const btn=form.querySelector('button');btn.disabled=true;msg.textContent='Sending…';try{const data=Object.fromEntries(new FormData(form));data.createdAt=serverTimestamp();data.status='New';await addDoc(collection(db,'enquiries'),data);form.reset();msg.className='success';msg.textContent='Thanks — your enquiry has been sent. We will be in touch.'}catch(err){console.error(err);msg.className='error';msg.textContent='We could not send the form. Please call us instead.'}btn.disabled=false});

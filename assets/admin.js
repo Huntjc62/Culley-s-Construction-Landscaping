@@ -1,0 +1,10 @@
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js';
+import {getFirestore,collection,query,orderBy,onSnapshot,doc,deleteDoc} from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js';
+import {firebaseConfig} from './firebase-config.js';
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const login=document.querySelector('#login'),dash=document.querySelector('#dash'),form=document.querySelector('#loginform'),loginmsg=document.querySelector('#loginmsg');
+form?.addEventListener('submit',async e=>{e.preventDefault();loginmsg.textContent='Signing in…';try{await signInWithEmailAndPassword(auth,email.value,password.value)}catch(x){loginmsg.textContent='Unable to sign in. Check your details.'}});
+document.querySelector('#logout')?.addEventListener('click',()=>signOut(auth));
+onAuthStateChanged(auth,u=>{if(u){login.classList.add('hidden');dash.classList.remove('hidden');load()}else{login.classList.remove('hidden');dash.classList.add('hidden')}});
+function load(){onSnapshot(query(collection(db,'enquiries'),orderBy('createdAt','desc')),s=>{count.textContent=s.size;list.innerHTML='';s.forEach(d=>{const x=d.data(),a=document.createElement('article');a.className='enquiry';a.innerHTML=`<div class="enqtop"><div><h3>${esc(x.name)}</h3><small>${esc(x.email)}</small></div><button data-id="${d.id}">Delete</button></div><div class="enqmeta">${esc(x.service)} · ${esc(x.phone)} · ${x.createdAt?.toDate?x.createdAt.toDate().toLocaleString('en-GB'):'Just now'}</div><p>${esc(x.message)}</p>`;a.querySelector('button').onclick=()=>confirm('Delete this enquiry?')&&deleteDoc(doc(db,'enquiries',d.id));list.appendChild(a)})})}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
