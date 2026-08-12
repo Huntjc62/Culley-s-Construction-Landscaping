@@ -42,3 +42,10 @@ Home / Construction / Landscaping / About / Contact / Admin
 
 ## Important
 The image URLs use Unsplash photography so the site has real visual content immediately. For a final commercial launch, replace these with Culley's own project photography for a much stronger and more authentic result.
+
+
+## Bundled construction hero
+The construction hero image is now included locally at:
+`assets/construction-hero.png`
+
+This means the construction hero does not rely on an external image URL and will travel with the website package when deployed.
