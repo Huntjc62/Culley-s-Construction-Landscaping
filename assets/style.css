@@ -30,3 +30,20 @@
 .empty-state{background:#fff;border:1px solid #ddd9d0;padding:35px}
 .empty-state h3{margin:0 0 5px}
 .empty-state p{margin:0;color:#666}
+
+/* Admin dashboard visibility fix */
+.adminmain #dash,
+.adminmain #dash.show,
+.adminmain section#dash {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+.adminmain #login {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+.adminmain .hidden {
+  display: none !important;
+}

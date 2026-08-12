@@ -129,3 +129,11 @@ Only the password is entered on the website. No password is hard-coded into the 
 1. Create the desired user in Firebase Authentication.
 2. Change `adminEmail` in `assets/firebase-config.js`.
 3. Redeploy the site.
+
+
+## Admin dashboard visibility fix
+The admin dashboard previously inherited the site's scroll-animation `opacity: 0` rule because the main stylesheet applies animations to all `<section>` elements. The admin page does not run the scroll observer, so the dashboard could become invisible after login.
+
+This package explicitly forces the logged-in admin dashboard to `opacity: 1`, `transform: none` and `visibility: visible`.
+
+The admin Firestore listener also now has a fallback unordered query if the ordered `createdAt` query fails.

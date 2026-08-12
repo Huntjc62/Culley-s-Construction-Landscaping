@@ -169,8 +169,72 @@ function loadEnquiries() {
       });
     },
     (error) => {
-      console.error("Could not load enquiries:", error);
-      list.innerHTML = '<div class="empty-state"><h3>Unable to load enquiries.</h3><p>Check that Firestore is enabled and the published security rules allow your admin account to read enquiries.</p></div>';
+      console.error("Ordered enquiry query failed:", error);
+
+      // Fall back to an unordered collection read. This also handles
+      // older/test documents that may not contain createdAt.
+      if (unsubscribeEnquiries) {
+        unsubscribeEnquiries();
+      }
+
+      unsubscribeEnquiries = onSnapshot(
+        collection(db, "enquiries"),
+        (snapshot) => {
+          count.textContent = snapshot.size;
+          list.innerHTML = "";
+
+          if (snapshot.empty) {
+            list.innerHTML = '<div class="empty-state"><h3>No enquiries yet.</h3><p>New website enquiries will appear here automatically.</p></div>';
+            return;
+          }
+
+          const documents = [...snapshot.docs].sort((a, b) => {
+            const aTime = a.data().createdAt?.toMillis?.() || 0;
+            const bTime = b.data().createdAt?.toMillis?.() || 0;
+            return bTime - aTime;
+          });
+
+          documents.forEach((documentSnapshot) => {
+            const enquiry = documentSnapshot.data();
+            const article = document.createElement("article");
+            article.className = "enquiry";
+
+            const date = enquiry.createdAt?.toDate
+              ? enquiry.createdAt.toDate().toLocaleString("en-GB")
+              : "Just now";
+
+            article.innerHTML = `
+              <div class="enqtop">
+                <div>
+                  <h3>${escapeHtml(enquiry.name)}</h3>
+                  <small>${escapeHtml(enquiry.email)}</small>
+                </div>
+                <button type="button" class="delete-enquiry">Delete</button>
+              </div>
+              <div class="enqmeta">
+                ${escapeHtml(enquiry.service)} · ${escapeHtml(enquiry.phone)} · ${date}
+              </div>
+              <p>${escapeHtml(enquiry.message)}</p>
+            `;
+
+            article.querySelector(".delete-enquiry").addEventListener("click", async () => {
+              if (!confirm("Delete this enquiry?")) return;
+              try {
+                await deleteDoc(doc(db, "enquiries", documentSnapshot.id));
+              } catch (deleteError) {
+                console.error("Could not delete enquiry:", deleteError);
+                alert("The enquiry could not be deleted.");
+              }
+            });
+
+            list.appendChild(article);
+          });
+        },
+        (fallbackError) => {
+          console.error("Could not load enquiries:", fallbackError);
+          list.innerHTML = '<div class="empty-state"><h3>Unable to load enquiries.</h3><p>Your admin login is working, but Firestore is not allowing this account to read the enquiries. Check the Firestore rules.</p></div>';
+        }
+      );
     }
   );
 }
